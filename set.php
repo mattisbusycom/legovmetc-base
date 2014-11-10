@@ -1,5 +1,4 @@
 <?php
-
 require 'vendor/autoload.php';
 
 $set = file_get_contents('./set');
@@ -23,26 +22,12 @@ foreach ($_data['content'] as $key => $set)
     $data['Set']['age_start'] = $set['ageStart'];
     $data['Set']['age_end']   = $set['ageEnd'];
 
-/*
-Array
-(
-    [at1x] => Array
-        (
-            [path] => 42000-1_alt_3_tn.jpg
-            [thumbnail] => 
-        )
-
-)
-*/
-
-    // Media Gallery / Image Processing
-    $data['Set']['media_gallery'] = array();
 
     if (is_array($set['imageList']))
     {
-	echo "IMAGES:\n\n";
-	$images = json_encode($set['imageList']);
-	print $images;
+	    echo "IMAGES:\n\n";
+	    $images = json_encode($set['imageList']);
+    	print $images;
     }
 
     $data['Set']['lego_catalog_url'] = 'http://shop.lego.com/catalog/productLargeView.jsp?modalView=true&productCode='.$set['sku'].'&scene7Video=0&scene7Spin=0';
