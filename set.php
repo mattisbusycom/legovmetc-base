@@ -1,6 +1,11 @@
 <?php
 require 'vendor/autoload.php';
 
+$layer2 = new Elasticsearch\Client();
+$params = array();
+$params['index'] = 'pley';
+$params['type']  = 'sets';
+
 $set = file_get_contents('./set');
 
 $_data = json_decode($set, true);
@@ -22,16 +27,19 @@ foreach ($_data['content'] as $key => $set)
     $data['Set']['age_start'] = $set['ageStart'];
     $data['Set']['age_end']   = $set['ageEnd'];
 
-
     if (is_array($set['imageList']))
     {
-	    echo "IMAGES:\n\n";
-	    $images = json_encode($set['imageList']);
-    	print $images;
+	    echo "images:\n\n";
+	    $images = json_encode($set['imagelist']);
+            foreach ($set['imagelist'] as $img) {
+                $data['Set']['main_image'] = ''.$_cdn_base.''.$img['path'].'';
+            }
     }
 
-    $data['Set']['lego_catalog_url'] = 'http://shop.lego.com/catalog/productLargeView.jsp?modalView=true&productCode='.$set['sku'].'&scene7Video=0&scene7Spin=0';
+    $params = array();
+    $params['index'] = 'pley';
+    $params['type']  = 'sets';	
 
-
-    print_r($data);
+    $params['body'] = $data['Set'];
+ 
 }
