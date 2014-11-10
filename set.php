@@ -4,12 +4,31 @@ $params = array();
 $params['hosts'] = array (
     'http://localhost:9200'
 );
+
+
+
 $client = new Elasticsearch\Client($params);
+
+// Mapping
+/*
+$legoSetMapping = array(
+    '_source' => array('enabled' => true),
+	'properites' => array(
+		'set_id' => array('type' => 'integer'),
+		'name' => array('type' => 'string')
+	)
+);
+$indexParams['body']['mappings']['set'] = $legoSetMapping;
+
+// Create the index
+$indexParams['index'] = 'pley_com';
+$client->indices()->create($indexParams);
+*/
 
 $set = file_get_contents('./set');
 
 $_data = json_decode($set, true);
-$_cdn_base = $data['cdnUrl'];
+$_cdn_base = $_data['cdnUrl'];
 
 print "CDN URL Base: ".$_cdn_base."\n\n";
 
@@ -38,9 +57,8 @@ foreach ($_data['content'] as $key => $set)
     $params = array();
     $params['body'] = $data['Set'];
 
-    $params['index'] = 'hacked_data';
-    $params['route'] = 'http_www_pley_com';
-    $params['type']  = 'set';
+    $params['index'] = 'pley_com';
+    $params['type']  = 'lego_set';
 
     $params['id'] = $data['Set']['box_set_id'];
 
