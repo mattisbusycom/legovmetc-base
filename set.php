@@ -1,10 +1,10 @@
 <?php
 require 'vendor/autoload.php';
-
-$layer2 = new Elasticsearch\Client();
 $params = array();
-$params['index'] = 'pley';
-$params['type']  = 'sets';
+$params['hosts'] = array (
+    'http://localhost:9200'
+);
+$client = new Elasticsearch\Client($params);
 
 $set = file_get_contents('./set');
 
@@ -15,31 +15,37 @@ print "CDN URL Base: ".$_cdn_base."\n\n";
 
 foreach ($_data['content'] as $key => $set)
 {
-    $_set_id = $data['Set']['set_id'];
-
-    $data['Set']['set_id'] = $set['sku'];
+    $_pley_id = $set['id'];
+    
+    $data['Set']['box_set_id'] = $set['sku'];
     $data['Set']['title']  = $set['title'];
-    $data['Set']['theme']  = $set['theme'];
     $data['Set']['subtitle']  = $set['title'];
     $data['Set']['description']  = $set['description'];
+    
+    $data['Set']['theme']  = $set['theme'];
 
-    // Age Range
     $data['Set']['age_start'] = $set['ageStart'];
     $data['Set']['age_end']   = $set['ageEnd'];
+    $data['Set']['gender']    = $set['gender'];
 
-    if (is_array($set['imageList']))
-    {
-	    echo "images:\n\n";
-	    $images = json_encode($set['imagelist']);
-            foreach ($set['imagelist'] as $img) {
-                $data['Set']['main_image'] = ''.$_cdn_base.''.$img['path'].'';
-            }
-    }
+    $images = $set['imageList'];
+
+    $data['Set']['image_list_json'] = json_encode($set['imageList']);
+    $data['Set']['store_list_json'] = json_encode($set['storeList']);
+
+    print_r($data);
 
     $params = array();
-    $params['index'] = 'pley';
-    $params['type']  = 'sets';	
-
     $params['body'] = $data['Set'];
- 
+
+    $params['index'] = 'hacked_data';
+    $params['route'] = 'http_www_pley_com';
+    $params['type']  = 'set';
+
+    $params['id'] = $data['Set']['box_set_id'];
+
+    // Index this Set to pley_hack/set/[box set id]
+    $ret = $client->index($params);
+    
+    print "Indexed ".$data['Set']['box_set_id'].", Return from ElasticSearch was:\n ".print_r($ret)."\n\n";
 }
